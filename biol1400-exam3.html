@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BIOL 1400 Exam 3 Lab</title>
+<style>
+:root{--bg:#f1f6ef;--card:#fff;--ink:#14281d;--mut:#4d6556;--acc:#1f8a5b;--b:#e0682f;--ln:#cfdccf;--ok:#1f8a5b;--no:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1b14;--card:#14271d;--ink:#e6f2e9;--mut:#9fb8a8;--acc:#4fd69c;--b:#ff9a62;--ln:#27443300;--ln:#274433}}
+:root[data-theme="dark"]{--bg:#0d1b14;--card:#14271d;--ink:#e6f2e9;--mut:#9fb8a8;--acc:#4fd69c;--b:#ff9a62;--ln:#274433}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+h1,h2,h3,button,nav a,select{font-family:"Trebuchet MS",Verdana,sans-serif}
+header{padding:28px 20px 12px;max-width:900px;margin:auto}
+h1{font-size:clamp(26px,5vw,40px);margin:0;letter-spacing:-.5px}
+header p{color:var(--mut);margin:6px 0 0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);display:flex;gap:6px;padding:8px 20px;overflow-x:auto;border-bottom:1px solid var(--ln);z-index:5}
+nav button{background:none;border:1px solid var(--ln);color:var(--ink);padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--acc);color:#04170d;border-color:var(--acc)}
+main{max-width:900px;margin:auto;padding:20px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px 18px;margin:0 0 14px}
+.card h3{margin:0 0 6px;color:var(--acc)}.card ul{margin:6px 0;padding-left:20px}
+.try{border-left:3px solid var(--b);padding-left:10px;color:var(--mut);margin:8px 0}
+a{color:var(--acc)}
+button.b,select{background:var(--card);color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:15px}
+button.b:hover,button:focus-visible,select:focus-visible{outline:2px solid var(--acc)}
+#cv{height:340px;border-radius:14px;border:1px solid var(--ln);background:var(--card);cursor:grab;touch-action:none}
+#cv canvas{display:block;width:100%;height:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer;font:inherit}
+.opt.ok{border-color:var(--ok);background:rgba(31,138,91,.18)}.opt.no{border-color:var(--no);background:rgba(192,57,43,.16)}
+table{border-collapse:collapse;margin:8px 0}td,th{border:1px solid var(--ln);padding:6px 12px;text-align:center}
+.wrap{overflow-x:auto}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head><body>
+<header><h1>🧬 BIOL 1400 · Exam 3 Lab</h1><p>Cell division and inheritance. Exam: Wednesday, Nov 18, 1:10 PM. Read, rotate, predict, then quiz yourself.</p></header>
+<nav id="nav"></nav>
+<main>
+<section id="learn"></section>
+<section id="lab">
+<div class="card"><h3>3D chromosome lab</h3><p>Drag to rotate. Two replicated homologous chromosomes: blue is maternal, orange is paternal. Each has two sister chromatids joined at a centromere. The colored bar on each chromatid is one gene’s allele.</p>
+<div id="cv"></div>
+<div class="row"><button class="b" data-h="sis">Sister chromatids</button><button class="b" data-h="non">Non-sister chromatids</button><button class="b" data-h="hom">Homologs</button><button class="b" data-h="x">Crossing over</button><button class="b" data-h="r">Reset</button></div>
+<p id="cap" class="try">Pick a button.</p></div></section>
+<section id="play">
+<div class="card"><h3>Punnett predictor (one gene)</h3>
+<div class="row"><select id="p1"></select>×<select id="p2"></select><select id="md"><option value="c">Complete dominance</option><option value="i">Incomplete dominance</option><option value="k">Codominance</option></select></div>
+<div id="pn"></div></div>
+<div class="card"><h3>Gamete maker (two genes)</h3>
+<div class="row"><select id="gt"><option>AAbb</option><option>AaBb</option><option>aaBb</option><option>AABb</option></select></div><div id="gm"></div>
+<p class="try">Rule: a gamete gets ONE allele of EACH gene, so AaBb makes 2 × 2 = 4 types.</p></div></section>
+<section id="quiz"></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=[
+["1. Cell division overview and prokaryotes",["Prokaryotes: one circular chromosome, no nucleus, binary fission, identical asexual daughters. Eukaryotes: several linear chromosomes in a nucleus.","Homologous chromosomes: one from each parent, same genes, maybe different alleles. Sister chromatids: identical copies from replication. Non-sister: chromatids on different homologs.","Replication doubles DNA, not the chromosome number.","Haploid cells have no homologs, so they can’t do meiosis."],"Sketch a diploid and a haploid cell with 3 chromosomes, before and after replication. Which have homologs? Which have sister chromatids?",[["Prokaryotic cell division","https://youtu.be/u5UyBrgVsvs"],["Binary fission","https://www.pearson.com/channels/biology/asset/5ff14980/binary-fission"],["Amoeba Sisters playlist (see Chromosome Numbers During Division)","https://www.youtube.com/playlist?list=PLwL0Myd7Dk1F0iQPGrjehze3eDpco1eVz"]]],
+["2. Mitosis and cancer",["Replicated chromosomes line up singly; sister chromatids separate. Result: 2 identical diploid cells.","If one pair of sister chromatids attaches to spindle fibers from the same side, one cell gets 9 DNA pieces and the other 7 (in a cell with 8 chromosomes).","Cancer is uncontrolled division from mutations in body cells. Those mutations aren’t in gametes, so offspring don’t inherit them."],"Narrate the mitosis video with the sound off, using a cell with 2 chromosomes (4 DNA pieces).",[["Amoeba Sisters: Mitosis","https://www.youtube.com/watch?v=f-ldPgEfAHI"],["Amoeba Sisters: Cell cycle and cancer","https://www.youtube.com/watch?v=QVCjdNxJreE"],["Khan Academy: Cancer","https://www.youtube.com/watch?v=RZhL7LDPk8w"]]],
+["3. Meiosis",["Meiosis I separates homologs. Meiosis II separates sister chromatids. 1 diploid cell becomes 4 unique haploid cells.","Crossing over (prophase I) swaps DNA between non-sister chromatids.","Sister chromatids carry the same alleles (no mutation). Non-sister chromatids can carry different alleles.","Chromosome 7 sisters fail to separate in meiosis II: two normal gametes, one with two copies, one with none."],"Fill a mitosis vs. meiosis table from memory: divisions, products, pairing, crossing over.",[["Amoeba Sisters: Meiosis","https://www.youtube.com/watch?v=VzDMG7ke69g"],["Khan: Mitosis, meiosis and sexual reproduction","https://youtu.be/kaSIjIzAtYA"]]],
+["4. Intro to inheritance and variation",["Gene = locus; allele = version; character = feature (flower color); trait = variant (purple).","Genotype is the main driver of phenotype, but environment matters too.","Independent orientation shuffles genes on different chromosomes. Crossing over shuffles genes on the same chromosome.","Mutation is the one source that also applies to asexual organisms. Add your instructor’s five sources from your slides."],"Draw independent orientation and crossing over side by side and explain each out loud.",[["Khan: Sources of genetic variation","https://pearson.com/channels/biology/asset/18eeee14/sources-of-genetic-variation-inheritance-and-variation-high-school-biology-khan-"],["Genetic recombination","https://www.youtube.com/watch?v=BlnUNmfGn7I"]]],
+["5. Autosomal genotype predictions",["Diploid = 2 alleles per gene, even if the species has 4 alleles.","Steps: parent genotypes → gametes (forked lines) → Punnett square → ratios.","AAbb × aaBb: gametes Ab × aB, ab → ½ AaBb, ½ Aabb. Squares aren’t always 4×4."],"Use the Play tab, then predict each cross on paper first.",[["Monohybrid crosses","https://pearson.com/channels/biology/asset/a0c0d24b/monohybrids-and-the-punnett-square-guinea-pigs"],["Dihybrid cross","https://www.pearson.com/channels/biology/asset/4ddd8ca3/dihybrid-cross-and-the-law-of-independent-assortment-high-school-biology-khan-ac"]]],
+["6. Mendelian patterns",["Genes on the same chromosome travel together unless crossing over separates them.","True-breeding means homozygous.","Dominant allele shows in heterozygotes; recessive shows only in homozygous recessives.","Dominance test: cross true-breeding pink × true-breeding yellow; the F1 color is dominant."],"Explain dominant vs. recessive using your own made-up trait.",[["Linked genes and crossing over","https://www.youtube.com/watch?v=99A6v-5_sFg"]]],
+["7. Sex-linked genes",["Males (XY) have one X, so every X-bearing sperm has the same X alleles, and males can’t be heterozygous for X-linked genes.","Females (XX) can be heterozygous; each egg gets one X, so eggs can differ."],"Draw XX and XY gamete formation with a labeled allele on each X.",[["Punnett squares and sex-linked traits","https://pearson.com/channels/biology/asset/20199837/punnett-squares-and-sex-linked-traits"]]],
+["8. Non-Mendelian patterns",["Complete: heterozygote looks dominant. Incomplete: intermediate. Codominance: both shown.","Test for lentil spot size: cross true-breeding large × small. F1 like one parent = complete; medium = incomplete; both large and small spots = codominance.","Polygenic: many genes, one trait. Pleiotropy: one gene, many traits."],"Write your own example for each of the 3 dominance patterns.",[["Incomplete dominance and codominance","https://www.pearson.com/channels/anp/asset/0e5991f6/incomplete-dominance-and-codominance"],["Pleiotropy","https://pearson.com/channels/biology/asset/1b18f82c/pleiotropy"]]],
+["9. Human genetic diseases",["Autosomal dominant: one copy is enough; affected people usually have an affected parent; sexes equal.","Autosomal recessive: needs two copies; can skip generations; unaffected carriers; sexes equal.","X-linked recessive: mostly males; no father-to-son; carrier mothers."],"Make a 3-column comparison table, then rework homeworks 20–27.",[["Amoeba Sisters: Pedigrees","https://www.pearson.com/channels/biology/asset/0620de0d/pedigrees-0620de0d"]]]];
+const Q=[
+["After DNA replication, a haploid eukaryotic cell has…",["sister chromatids but no homologous pairs","homologous pairs, since each chromosome now has two copies","a circular chromosome","no nucleus"],0,"Replication makes sister chromatids. Homologs come from two parents, which a haploid cell doesn’t have."],
+["Sister chromatids of chromosome 7 fail to separate in meiosis II. Gametes produced:",["Two normal, one with two copies, one with none","Two with an extra copy and two with none","Four normal gametes","Four diploid gametes"],0,"Only one of the two meiosis II cells is affected. Option B describes a meiosis I error."],
+["A skin-cell mutation causes cancer. It can’t reach offspring because…",["it is in somatic cells, not gametes","meiosis repairs all skin mutations","cancer cells can’t divide","offspring form by mitosis of skin"],0,"Only mutations in germ-line cells that become gametes are inherited."],
+["With no mutations, which DNA pieces can carry different alleles of the same gene?",["Sister chromatids","Non-sister chromatids of a homologous pair","A bacterium’s single chromosome","None, all chromatids match"],1,"Sisters are copies of one DNA molecule; non-sisters sit on different homologs."],
+["Genes on different chromosomes form new allele combinations in gametes mainly by…",["crossing over","independent orientation","DNA replication","binary fission"],1,"Crossing over reshuffles genes on the same chromosome."],
+["Which are possible gametes of an AaBb individual?",["AB, Ab, aB, ab","AB and ab only","AaBb","AABB"],0,"One allele per gene, in every combination (independent genes). B assumes linkage."],
+["AAbb × aaBb. Offspring genotypes:",["½ AaBb, ½ Aabb","¼ each of AaBb, Aabb, aaBb, aabb","all AABB","all aabb"],0,"AAbb makes only Ab, so the square is 1×2."],
+["Two pink flowers (incomplete dominance, red × white → pink) are crossed. Expected offspring:",["1 red : 2 pink : 1 white","3 red : 1 white","all pink","all red"],0,"Aa × Aa gives 1:2:1, and each genotype has its own phenotype."],
+["Colorblind father (X-linked recessive), non-carrier mother. Their children:",["No sons affected; all daughters carriers","All sons colorblind","Daughters colorblind, sons carriers","No child can inherit it"],0,"Sons get his Y and her normal X. Daughters get his X plus her normal X."],
+["One mutated gene causes tall stature, heart disease and vision loss. This is…",["pleiotropy","polygenic inheritance","codominance","binary fission"],0,"One gene, many traits. Polygenic is the reverse."],
+["Two unaffected parents have an affected daughter. Most likely:",["autosomal recessive","X-linked recessive","a body-cell mutation inherited by mitosis","binary fission"],0,"An affected daughter with an unaffected father rules out X-linked recessive."]];
+const $=s=>document.querySelector(s),sec=["learn","lab","play","quiz"],lab=["Study guide","3D lab","Play","Quiz"];
+$("#nav").innerHTML=sec.map((s,i)=>`<button data-s="${s}" class="${i?"":"on"}">${lab[i]}</button>`).join("");
+$("#nav").onclick=e=>{const s=e.target.dataset.s;if(!s)return;document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b===e.target));sec.forEach(x=>$("#"+x).classList.toggle("on",x==s));if(s=="lab")fit()};
+$("#learn").classList.add("on");
+$("#learn").innerHTML=T.map(t=>`<div class="card"><h3>${t[0]}</h3><ul>${t[1].map(p=>`<li>${p}</li>`).join("")}</ul><div class="try"><b>Try it:</b> ${t[2]}</div><div>${t[3].map(v=>`<a href="${v[1]}" target="_blank" rel="noopener">▶ ${v[0]}</a>`).join("<br>")}</div></div>`).join("");
+// quiz
+let qi=0,sc=0,done=false;
+function rq(){const q=Q[qi];if(!q){$("#quiz").innerHTML=`<div class="card"><h3>Done: ${sc}/${Q.length}</h3><p>Review the rationales you missed, then retry.</p><button class="b" onclick="qi=0;sc=0;rq()">Restart</button></div>`;return}
+done=false;$("#quiz").innerHTML=`<div class="card"><p>Question ${qi+1} of ${Q.length} · Score ${sc}</p><h3>${q[0]}</h3>${q[1].map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}<p id="why"></p></div>`}
+$("#quiz").onclick=e=>{const b=e.target.closest(".opt");if(!b||done)return;done=true;const q=Q[qi],i=+b.dataset.i;if(i==q[2])sc++;b.classList.add(i==q[2]?"ok":"no");document.querySelectorAll(".opt")[q[2]].classList.add("ok");$("#why").innerHTML=`<b>${i==q[2]?"Correct.":"Not quite."}</b> ${q[3]}<br><button class="b" onclick="qi++;rq()">Next</button>`};rq();
+// punnett
+const G=["AA","Aa","aa"];["#p1","#p2"].forEach((s,i)=>$(s).innerHTML=G.map(g=>`<option ${g==G[i+1-i*1]?"selected":""}>${g}</option>`).join(""));
+const ph={c:{AA:"dominant",Aa:"dominant",aa:"recessive"},i:{AA:"red",Aa:"pink",aa:"white"},k:{AA:"red",Aa:"red + white",aa:"white"}};
+function pn(){const a=$("#p1").value,b=$("#p2").value,m=$("#md").value,ga=[...new Set(a)],gb=[...new Set(b)],c={};let n=0;
+let h=`<div class="wrap"><table><tr><th></th>${gb.map(x=>`<th>${x}</th>`).join("")}</tr>`;
+ga.forEach(x=>{h+=`<tr><th>${x}</th>`;gb.forEach(y=>{const g=[x,y].sort().join("");c[g]=(c[g]||0)+1;n++;h+=`<td>${g}</td>`});h+="</tr>"});
+const p={};h+=`</table></div><p>Genotypes: ${Object.entries(c).map(([g,k])=>`${k}/${n} ${g}`).join(", ")}</p>`;
+Object.entries(c).forEach(([g,k])=>p[ph[m][g]]=(p[ph[m][g]]||0)+k);
+$("#pn").innerHTML=h+`<p>Phenotypes: ${Object.entries(p).map(([f,k])=>`${k}/${n} ${f}`).join(", ")}</p>`}
+["#p1","#p2","#md"].forEach(s=>$(s).onchange=pn);pn();
+function gm(){const g=$("#gt").value,x=[...new Set(g.slice(0,2))],y=[...new Set(g.slice(2))];$("#gm").innerHTML=`<p>${g}: ${x.flatMap(i=>y.map(j=>i+j)).join(", ")}</p>`}
+$("#gt").onchange=gm;gm();
+// 3D
+let R,S,C,grp,ch=[],bars=[],ry=.5,rx=.2,fit=()=>{};
+if(window.THREE){const el=$("#cv");S=new THREE.Scene();C=new THREE.PerspectiveCamera(45,1,.1,100);C.position.set(0,0,9);
+R=new THREE.WebGLRenderer({antialias:true,alpha:true});el.appendChild(R.domElement);S.add(new THREE.AmbientLight(0xffffff,.7));const L=new THREE.DirectionalLight(0xffffff,.8);L.position.set(3,5,6);S.add(L);
+grp=new THREE.Group();S.add(grp);const col=[0x2f7fd6,0x2f7fd6,0xe0682f,0xe0682f],xs=[-2.3,-1.7,1.7,2.3],al=[0x22cc66,0x22cc66,0xffd23f,0xb04fe0];
+xs.forEach((x,i)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,3.4,20),new THREE.MeshPhongMaterial({color:col[i]}));m.position.x=x;grp.add(m);ch.push(m);
+const b=new THREE.Mesh(new THREE.BoxGeometry(.5,.32,.5),new THREE.MeshPhongMaterial({color:al[i]}));b.position.set(x,.9,0);grp.add(b);bars.push(b)});
+[-2,2].forEach(x=>{const c=new THREE.Mesh(new THREE.SphereGeometry(.34,16,16),new THREE.MeshPhongMaterial({color:0xdddddd}));c.position.x=x;grp.add(c)});
+fit=()=>{const w=el.clientWidth,h=el.clientHeight;R.setSize(w,h);C.aspect=w/h;C.updateProjectionMatrix()};fit();addEventListener("resize",fit);
+let d=false,px=0,py=0;el.onpointerdown=e=>{d=true;px=e.clientX;py=e.clientY};addEventListener("pointerup",()=>d=false);addEventListener("pointermove",e=>{if(d){ry+=(e.clientX-px)*.01;rx+=(e.clientY-py)*.01;px=e.clientX;py=e.clientY}});
+(function a(){requestAnimationFrame(a);grp.rotation.set(rx,ry,0);R.render(S,C)})();}
+else $("#cv").textContent="3D view needs WebGL.";
+const cap={sis:["Sister chromatids: same chromosome, identical DNA and alleles.",[0,1,0,0]],non:["Non-sister chromatids: on different homologs; same genes, maybe different alleles.",[1,0,1,0]],hom:["Homologous chromosomes: the maternal and paternal pair.",[1,1,1,1]]};
+document.querySelector("#lab .row").onclick=e=>{const k=e.target.dataset.h;if(!k||!ch.length)return;ch.forEach(m=>m.material.emissive.setHex(0));
+if(k=="r"){bars[1].material.color.setHex(0x22cc66);bars[2].material.color.setHex(0xffd23f);$("#cap").textContent="Reset.";return}
+if(k=="x"){const t=bars[1].material.color.getHex();bars[1].material.color.setHex(bars[2].material.color.getHex());bars[2].material.color.setHex(t);ch[1].material.emissive.setHex(0x555555);ch[2].material.emissive.setHex(0x555555);$("#cap").textContent="Crossing over: the two inner non-sister chromatids swapped alleles, making recombinant chromatids.";return}
+const c=cap[k];$("#cap").textContent=c[0];(k=="sis"?[0,1]:k=="non"?[1,2]:[0,1,2,3]).forEach(i=>ch[i].material.emissive.setHex(0x666666))};
+</script></body></html>
